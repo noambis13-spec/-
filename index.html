@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>🎂 Birthday Countdown</title>
+<style>
+*{box-sizing:border-box;margin:0}
+body{min-height:100vh;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:linear-gradient(135deg,#7b2ff7,#f107a3);padding:20px 12px;display:flex;justify-content:center;align-items:flex-start;color:#2a2340}
+.card{background:#fff;border-radius:28px;box-shadow:0 20px 60px rgba(40,0,80,.35);width:100%;max-width:560px;padding:24px 18px 28px}
+h1{text-align:center;font-size:2.1rem;line-height:1.2;margin:6px 0 4px}
+.sub{text-align:center;color:#7a7191;margin-bottom:18px}
+.langs{display:flex;gap:6px;justify-content:center;margin-bottom:18px;flex-wrap:wrap}
+.langs button{border:2px solid #e6dff5;background:#faf7ff;border-radius:14px;padding:8px 12px;font-size:.95rem;cursor:pointer;font-weight:600}
+.langs button.on{border-color:#7b2ff7;background:#f0e6ff}
+label.t{display:block;font-weight:700;font-size:.9rem;margin:16px 0 6px}
+.seg{display:flex;background:#f1ecfa;border-radius:14px;padding:4px;gap:4px}
+.seg button{flex:1;border:0;background:transparent;padding:10px 6px;border-radius:11px;font-size:.88rem;font-weight:600;color:#5b5075;cursor:pointer}
+.seg button.on{background:#fff;color:#7b2ff7;box-shadow:0 2px 8px rgba(80,30,150,.2)}
+input,select{width:100%;padding:13px;border:2px solid #e6dff5;border-radius:14px;font-size:1rem;background:#fff;color:inherit;font-family:inherit}
+input:focus,select:focus{outline:none;border-color:#7b2ff7}
+.row{display:grid;grid-template-columns:1fr 1.6fr 1.2fr;gap:8px}
+.big{width:100%;margin-top:20px;border:0;border-radius:16px;padding:16px;font-size:1.05rem;font-weight:700;color:#fff;background:linear-gradient(135deg,#7b2ff7,#f107a3);cursor:pointer;box-shadow:0 8px 20px rgba(200,20,160,.35)}
+.big:disabled{opacity:.6}
+.big.ok{background:linear-gradient(135deg,#12b76a,#0e9f5c)}
+.err{color:#c0262d;text-align:center;margin-top:12px;font-weight:600}
+#res{margin-top:22px}
+.hero{background:linear-gradient(135deg,#f6edff,#ffe6f5);border-radius:20px;padding:20px;text-align:center}
+.hero small{color:#7a7191;font-weight:600}
+.hero .dt{font-size:1.45rem;font-weight:800;margin:6px 0}
+.hero .turn{font-size:1.15rem;font-weight:700;color:#c2088f}
+.today{font-size:1.5rem;font-weight:800;color:#c2088f;margin-top:10px}
+.cd{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0;direction:ltr}
+.cd div{background:#2a1b4d;color:#fff;border-radius:16px;padding:12px 2px;text-align:center}
+.cd b{display:block;font-size:1.7rem;font-variant-numeric:tabular-nums}
+.cd span{font-size:.72rem;opacity:.8}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.box{background:#faf7ff;border:1px solid #eadffc;border-radius:16px;padding:12px;text-align:center}
+.box small{display:block;color:#7a7191;font-size:.78rem;margin-bottom:4px}
+.box b{font-size:1rem}
+.hide{display:none!important}
+.ov{position:fixed;inset:0;background:rgba(20,5,40,.55);opacity:0;pointer-events:none;transition:opacity .3s;z-index:9;display:flex;align-items:flex-end;justify-content:center}
+.ov.open{opacity:1;pointer-events:auto}
+.sheet{background:#fff;width:100%;max-width:560px;border-radius:26px 26px 0 0;padding:10px 16px calc(20px + env(safe-area-inset-bottom,0px));transform:translateY(100%);transition:transform .38s cubic-bezier(.2,.9,.25,1)}
+.ov.open .sheet{transform:translateY(0)}
+.grab{width:44px;height:5px;border-radius:3px;background:#d8d0e6;margin:0 auto 14px}
+.sheet h3{text-align:center;font-size:1.2rem}
+.sheet p.s{text-align:center;color:#7a7191;font-size:.9rem;margin:4px 0 14px}
+.opt{display:flex;align-items:center;gap:14px;width:100%;border:0;background:#faf7ff;border-radius:16px;padding:13px;margin-bottom:8px;cursor:pointer;text-align:start;font-family:inherit;color:inherit}
+.opt i{font-style:normal;font-size:1.8rem;width:46px;height:46px;display:grid;place-items:center;background:#fff;border-radius:13px;box-shadow:0 2px 8px rgba(80,30,150,.15)}
+.opt b{display:block;font-size:1rem}
+.opt span{font-size:.82rem;color:#7a7191}
+.cancel{width:100%;border:0;background:#efe9fa;border-radius:16px;padding:14px;font-weight:700;font-size:1rem;cursor:pointer;margin-top:4px;color:#5b5075}
+@media(max-width:400px){h1{font-size:1.7rem}.cd b{font-size:1.4rem}.row{grid-template-columns:1fr 1.5fr 1.2fr}}
+@media(prefers-reduced-motion:reduce){.sheet,.ov{transition:none}}
+.seg,.seg button{border-radius:999px}
+label.t.s{margin:0 0 5px;font-size:.8rem;color:#5b5075}
+.row>div{min-width:0}
+.sws{display:grid;gap:8px}
+.sw{display:flex;align-items:center;justify-content:space-between;background:#faf7ff;border:2px solid #e6dff5;border-radius:14px;padding:12px 14px;font-weight:600;cursor:pointer}
+.sw input{display:none}
+.sw i{width:46px;height:26px;border-radius:13px;background:#cfc6e0;position:relative;transition:background .2s;flex:none}
+.sw i::after{content:"";position:absolute;top:3px;inset-inline-start:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 1px 4px rgba(0,0,0,.3)}
+.sw input:checked+i{background:linear-gradient(135deg,#7b2ff7,#f107a3)}
+.sw input:checked+i::after{transform:translateX(20px)}
+[dir=rtl] .sw input:checked+i::after{transform:translateX(-20px)}
+</style>
+</head>
+<body>
+<div class="card">
+  <h1 id="title"></h1>
+  <p class="sub" id="sub"></p>
+  <div class="langs" id="langs"></div>
+
+  <label class="t" id="l_in"></label>
+  <div class="seg" id="segIn"><button data-v="g"></button><button data-v="h"></button></div>
+
+  <label class="t" id="l_date"></label>
+  <div id="gBox"><input type="date" id="gDate"></div>
+  <div id="hBox" class="row hide">
+    <div><label class="t s" id="l_day" for="hd"></label><select id="hd"></select></div>
+    <div><label class="t s" id="l_mon" for="hm"></label><select id="hm"></select></div>
+    <div><label class="t s" id="l_year" for="hy"></label><select id="hy"></select></div>
+  </div>
+
+  <label class="t" id="l_out"></label>
+  <div class="sws">
+    <label class="sw"><span id="tH"></span><input type="checkbox" id="swH" checked><i></i></label>
+    <label class="sw"><span id="tG"></span><input type="checkbox" id="swG" checked><i></i></label>
+  </div>
+
+  <button class="big" id="calc"></button>
+  <div class="err" id="err"></div>
+
+  <div id="res" class="hide">
+    <div class="hero">
+      <small id="r_next"></small>
+      <div class="dt" id="r_dt"></div>
+      <div class="turn" id="r_turn"></div>
+      <div class="today hide" id="r_today"></div>
+    </div>
+    <div class="cd" id="cd">
+      <div><b id="c_d">0</b><span id="u_d"></span></div>
+      <div><b id="c_h">0</b><span id="u_h"></span></div>
+      <div><b id="c_m">0</b><span id="u_m"></span></div>
+      <div><b id="c_s">0</b><span id="u_s"></span></div>
+    </div>
+    <div class="grid">
+      <div class="box"><small id="k_dow"></small><b id="v_dow"></b></div>
+      <div class="box"><small id="k_left"></small><b id="v_left"></b></div>
+      <div class="box" id="bG"><small id="k_g"></small><b id="v_g"></b></div>
+      <div class="box" id="bH"><small id="k_h"></small><b id="v_h"></b></div>
+      <div class="box"><small id="k_lived"></small><b id="v_lived"></b></div>
+      <div class="box"><small id="k_weeks"></small><b id="v_weeks"></b></div>
+    </div>
+    <button class="big" id="save"></button>
+  </div>
+</div>
+
+<div class="ov" id="ov">
+  <div class="sheet" role="dialog" aria-modal="true">
+    <div class="grab"></div>
+    <h3 id="m_t"></h3><p class="s" id="m_s"></p>
+    <button class="opt" data-c="apple"><i>🍎</i><div><b id="o_a"></b><span id="o_as"></span></div></button>
+    <button class="opt" data-c="google"><i>📆</i><div><b id="o_g"></b><span id="o_gs"></span></div></button>
+    <button class="opt" data-c="outlook"><i>📧</i><div><b id="o_o"></b><span id="o_os"></span></div></button>
+    <button class="opt" data-c="phone"><i>📱</i><div><b id="o_p"></b><span id="o_ps"></span></div></button>
+    <button class="cancel" id="m_x"></button>
+  </div>
+</div>
+
+<script>
+const API="https://www.hebcal.com/converter?cfg=json";
+const MK=["Nisan","Iyyar","Sivan","Tamuz","Av","Elul","Tishrei","Cheshvan","Kislev","Tevet","Shvat","Adar","Adar1","Adar2"];
+const L={
+he:{dir:"rtl",loc:"he-IL",flag:"🇮🇱",name:"עברית",
+ title:"🎂 ספירה לאחור ליום הולדת",sub:"גלו כמה זמן נשאר ליום ההולדת הבא שלכם",
+ inT:"סוג תאריך הלידה",greg:"לועזי",heb:"עברי",date:"תאריך הלידה",outT:"איך להציג את התוצאות",both:"עברי + לועזי",onlyG:"רק לועזי",onlyH:"רק עברי",
+ dayL:"יום",monL:"חודש",yearL:"שנה",tH:"עברי",na:"לא זמין כרגע",tG:"לועזי",calc:"חשב הכל",busy:"מחשב...",next:"יום ההולדת הבא שלך:",turn:a=>`תהיה בן/בת ${a} 🎉`,today:"היום יום ההולדת שלך! יום הולדת שמח!!",
+ d:"ימים",h:"שעות",m:"דקות",s:"שניות",dow:"יום בשבוע",left:"סך הכל נשאר",g:"תאריך לועזי",hb:"תאריך עברי",lived:"ימי חיים עד היום",weeks:"שבועות עד יום ההולדת",
+ days:n=>`${n} ימים`,save:"שמור ביומן בטלפון",saved:"נשמר! בדקו ביומן ✅",mt:"שמירה ביומן",ms:"בחרו איפה לשמור את יום ההולדת",
+ a:"יומן Apple",as:"iPhone / iCloud",g_:"יומן Google",gs:"Google / אנדרואיד",o:"יומן Outlook",os:"Outlook / Microsoft",p:"יומן הטלפון",ps:"סמסונג / שיאומי / כל טלפון אחר - המערכת תשאל",x:"ביטול",
+ err:"אירעה שגיאה. בדקו את התאריך והחיבור לאינטרנט.",nodate:"נא לבחור תאריך לידה",ev:"יום הולדת 🎂",det:"יום הולדת שמח!",
+ mon:["ניסן","אייר","סיון","תמוז","אב","אלול","תשרי","חשון","כסלו","טבת","שבט","אדר","אדר א׳","אדר ב׳"]},
+en:{dir:"ltr",loc:"en-GB",flag:"🇬🇧",name:"English",
+ title:"🎂 Birthday Countdown",sub:"Find out how long until your next birthday",
+ inT:"Birth date type",greg:"Gregorian",heb:"Hebrew",date:"Birth date",outT:"How to show results",both:"Hebrew + Gregorian",onlyG:"Only Gregorian",onlyH:"Only Hebrew",
+ dayL:"Day",monL:"Month",yearL:"Year",tH:"Hebrew",na:"Not available right now",tG:"Gregorian",calc:"Calculate Everything",busy:"Calculating...",next:"Your next birthday:",turn:a=>`You will turn ${a} 🎉`,today:"Today is your birthday! Happy Birthday!!",
+ d:"Days",h:"Hours",m:"Minutes",s:"Seconds",dow:"Day of week",left:"Total left",g:"Gregorian date",hb:"Hebrew date",lived:"Days lived until today",weeks:"Weeks until birthday",
+ days:n=>`${n} days`,save:"Save to Phone Calendar",saved:"Saved! Check your calendar ✅",mt:"Save to calendar",ms:"Choose where to save your birthday",
+ a:"Apple Calendar",as:"iPhone / iCloud",g_:"Google Calendar",gs:"Google / Android",o:"Outlook Calendar",os:"Outlook / Microsoft",p:"Phone Calendar",ps:"Samsung / Xiaomi / Any other phone - The system will ask you",x:"Cancel",
+ err:"Something went wrong. Check the date and your internet connection.",nodate:"Please choose a birth date",ev:"Birthday 🎂",det:"Happy Birthday!",
+ mon:["Nisan","Iyar","Sivan","Tammuz","Av","Elul","Tishrei","Cheshvan","Kislev","Tevet","Shevat","Adar","Adar I","Adar II"]},
+fr:{dir:"ltr",loc:"fr-FR",flag:"🇫🇷",name:"Français",
+ title:"🎂 Compte à rebours d'anniversaire",sub:"Découvrez le temps restant avant votre prochain anniversaire",
+ inT:"Type de date de naissance",greg:"Grégorien",heb:"Hébraïque",date:"Date de naissance",outT:"Affichage des résultats",both:"Hébraïque + Grégorien",onlyG:"Grégorien seulement",onlyH:"Hébraïque seulement",
+ dayL:"Jour",monL:"Mois",yearL:"Année",tH:"Hébraïque",na:"Indisponible pour le moment",tG:"Grégorien",calc:"Tout calculer",busy:"Calcul...",next:"Votre prochain anniversaire :",turn:a=>`Vous aurez ${a} ans 🎉`,today:"C'est votre anniversaire ! Joyeux anniversaire !!",
+ d:"Jours",h:"Heures",m:"Minutes",s:"Secondes",dow:"Jour de la semaine",left:"Total restant",g:"Date grégorienne",hb:"Date hébraïque",lived:"Jours vécus jusqu'à aujourd'hui",weeks:"Semaines avant l'anniversaire",
+ days:n=>`${n} jours`,save:"Enregistrer dans le calendrier",saved:"Enregistré ! Vérifiez votre calendrier ✅",mt:"Enregistrer dans le calendrier",ms:"Choisissez où enregistrer votre anniversaire",
+ a:"Calendrier Apple",as:"iPhone / iCloud",g_:"Google Agenda",gs:"Google / Android",o:"Calendrier Outlook",os:"Outlook / Microsoft",p:"Calendrier du téléphone",ps:"Samsung / Xiaomi / Tout autre téléphone - Le système vous demandera",x:"Annuler",
+ err:"Une erreur est survenue. Vérifiez la date et votre connexion internet.",nodate:"Veuillez choisir une date de naissance",ev:"Anniversaire 🎂",det:"Joyeux anniversaire !",
+ mon:["Nissan","Iyar","Sivan","Tamouz","Av","Elloul","Tichri","Hechvan","Kislev","Tevet","Chevat","Adar","Adar I","Adar II"]},
+es:{dir:"ltr",loc:"es-ES",flag:"🇪🇸",name:"Español",
+ title:"🎂 Cuenta atrás de cumpleaños",sub:"Descubre cuánto falta para tu próximo cumpleaños",
+ inT:"Tipo de fecha de nacimiento",greg:"Gregoriano",heb:"Hebreo",date:"Fecha de nacimiento",outT:"Cómo mostrar los resultados",both:"Hebreo + Gregoriano",onlyG:"Solo gregoriano",onlyH:"Solo hebreo",
+ dayL:"Día",monL:"Mes",yearL:"Año",tH:"Hebreo",na:"No disponible por ahora",tG:"Gregoriano",calc:"Calcular todo",busy:"Calculando...",next:"Tu próximo cumpleaños:",turn:a=>`Cumplirás ${a} años 🎉`,today:"¡Hoy es tu cumpleaños! ¡Feliz cumpleaños!!",
+ d:"Días",h:"Horas",m:"Minutos",s:"Segundos",dow:"Día de la semana",left:"Total restante",g:"Fecha gregoriana",hb:"Fecha hebrea",lived:"Días vividos hasta hoy",weeks:"Semanas hasta el cumpleaños",
+ days:n=>`${n} días`,save:"Guardar en el calendario del móvil",saved:"¡Guardado! Revisa tu calendario ✅",mt:"Guardar en el calendario",ms:"Elige dónde guardar tu cumpleaños",
+ a:"Calendario Apple",as:"iPhone / iCloud",g_:"Google Calendar",gs:"Google / Android",o:"Calendario Outlook",os:"Outlook / Microsoft",p:"Calendario del teléfono",ps:"Samsung / Xiaomi / Cualquier otro móvil - El sistema te preguntará",x:"Cancelar",
+ err:"Algo salió mal. Revisa la fecha y tu conexión a internet.",nodate:"Elige una fecha de nacimiento",ev:"Cumpleaños 🎂",det:"¡Feliz cumpleaños!",
+ mon:["Nisán","Iyar","Siván","Tamuz","Av","Elul","Tishrei","Jeshván","Kislev","Tevet","Shevat","Adar","Adar I","Adar II"]}
+};
+const $=id=>document.getElementById(id);
+const S={lang:"he",inT:"g",showH:true,showG:true,res:null,saved:false};
+const t=()=>L[S.lang];
+const pad=n=>String(n).padStart(2,"0");
+const ymd=d=>`${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}`;
+const iso=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const addDay=(d,n)=>new Date(d.getFullYear(),d.getMonth(),d.getDate()+n);
+const midnight=()=>{const n=new Date();return new Date(n.getFullYear(),n.getMonth(),n.getDate())};
+const utcDay=d=>Date.UTC(d.getFullYear(),d.getMonth(),d.getDate());
+
+/* ---------- Hebcal ---------- */
+async function call(q){const r=await fetch(API+"&"+q);const j=await r.json();return j.error?null:j}
+const g2h=d=>call(`gy=${d.getFullYear()}&gm=${d.getMonth()+1}&gd=${d.getDate()}&g2h=1`);
+async function h2g(y,m,d){
+  const ms=m==="Adar"?["Adar","Adar2"]:(m==="Adar1"||m==="Adar2")?[m,"Adar"]:[m];
+  for(const mk of ms)for(const dd of d==30?[30,29]:[d]){
+    const r=await call(`hy=${y}&hm=${mk}&hd=${dd}&h2g=1`);
+    if(r&&r.gy)return r;
+  }
+  return null;
+}
+const toDate=r=>new Date(r.gy,r.gm-1,r.gd);
+function monIdx(n){n=String(n).replace(/\s/g,"").replace("AdarII","Adar2").replace("AdarI","Adar1");const i=MK.indexOf(n);return i<0?MK.indexOf("Adar"):i}
+
+/* ---------- Gematria ---------- */
+const GU=["","א","ב","ג","ד","ה","ו","ז","ח","ט"],GT=["","י","כ","ל","מ","נ","ס","ע","פ","צ"],GH=["","ק","ר","ש","ת"];
+function letters(n){let s="";while(n>=400){s+="ת";n-=400}
+  if(n>=100){s+=GH[Math.floor(n/100)];n%=100}
+  if(n===15)return s+"טו";if(n===16)return s+"טז";
+  return s+GT[Math.floor(n/10)]+GU[n%10]}
+const punct=x=>x.length===1?x+"׳":x.slice(0,-1)+"״"+x.slice(-1);
+function toHebrewNumber(n,noThousands){
+  n=Math.round(n);if(n===0)return "אפס";
+  const th=Math.floor(n/1000),r=n%1000;let out="";
+  if(th&&!noThousands)out=punct(letters(th));
+  if(r)out+=punct(letters(r));
+  return out}
+const onlyH=()=>S.showH&&!S.showG;
+const N=n=>onlyH()?toHebrewNumber(n):String(n);
+function hdate(R){const T=t(),m=T.mon[monIdx(R.hm)],d=toHebrewNumber(R.hd,1),y=toHebrewNumber(R.hy,1);
+  return S.lang==="he"?`${d} ב${m} ${y}`:`<bdi dir="rtl">${d}</bdi> ${m} <bdi dir="rtl">${y}</bdi>`}
+
+/* ---------- UI text ---------- */
+function setText(){
+  const T=t();document.documentElement.dir=T.dir;document.documentElement.lang=S.lang;
+  [["title","title"],["sub","sub"],["l_in","inT"],["l_date","date"],["l_out","outT"],["l_day","dayL"],["l_mon","monL"],["l_year","yearL"],["tH","tH"],["tG","tG"],["calc","calc"],
+   ["u_d","d"],["u_h","h"],["u_m","m"],["u_s","s"],["m_t","mt"],["m_s","ms"],["o_a","a"],["o_as","as"],["o_g","g_"],["o_gs","gs"],["o_o","o"],["o_os","os"],["o_p","p"],["o_ps","ps"],["m_x","x"],["r_next","next"],["k_dow","dow"],["k_left","left"],["k_g","g"],["k_h","hb"],["k_lived","lived"],["k_weeks","weeks"],["r_today","today"]]
+    .forEach(([i,k])=>$(i).textContent=T[k]);
+  const si=$("segIn").children;si[0].textContent=T.greg;si[1].textContent=T.heb;
+  $("save").textContent=S.saved?T.saved:T.save;
+  const pm=$("hm").value||"0";
+  $("hm").innerHTML=T.mon.map((n,i)=>`<option value="${i}">${n}</option>`).join("");$("hm").value=pm;
+  $("swH").checked=S.showH;$("swG").checked=S.showG;
+  document.querySelectorAll(".langs button").forEach(b=>b.classList.toggle("on",b.dataset.l===S.lang));
+  document.querySelectorAll("#segIn button").forEach(b=>b.classList.toggle("on",b.dataset.v===S.inT));
+  $("gBox").classList.toggle("hide",S.inT!=="g");$("hBox").classList.toggle("hide",S.inT!=="h");
+  renderRes();
+}
+function renderRes(){
+  const R=S.res;if(!R)return;const T=t(),oh=onlyH();
+  const gStr=R.next.toLocaleDateString(T.loc,{day:"numeric",month:"long",year:"numeric"});
+  const hasH=S.showH&&!!R.hy,showHB=S.showH,hStr=hasH?hdate(R):(R.hfail?T.na:"…");
+  $("bG").classList.toggle("hide",!S.showG);$("bH").classList.toggle("hide",!showHB);
+  $("r_dt").innerHTML=[S.showG?gStr:"",showHB?hStr:""].filter(Boolean).join("<br>");
+  $("r_turn").textContent=T.turn(N(R.age));
+  $("v_dow").textContent=R.next.toLocaleDateString(oh?"he-IL":T.loc,{weekday:"long"});
+  $("v_g").textContent=gStr;$("v_h").innerHTML=hStr;
+  $("v_lived").textContent=oh?N(R.lived):R.lived.toLocaleString(T.loc);
+  $("v_left").textContent=T.days(N(R.daysLeft));
+  $("v_weeks").textContent=N(Math.floor(R.daysLeft/7));
+  $("r_today").classList.toggle("hide",!R.isToday);
+  tick();
+}
+function tick(){
+  const R=S.res;if(!R)return;
+  let ms=R.next-new Date();if(ms<0)ms=0;
+  const s=Math.floor(ms/1000),oh=onlyH();
+  const f=(n,p)=>oh?toHebrewNumber(n):(p?pad(n):String(n));
+  $("c_d").textContent=f(Math.floor(s/86400));$("c_h").textContent=f(Math.floor(s%86400/3600),1);
+  $("c_m").textContent=f(Math.floor(s%3600/60),1);$("c_s").textContent=f(s%60,1);
+}
+async function fetchHeb(R){
+  if(R.hy||R.hbusy)return;R.hbusy=true;R.hfail=false;renderRes();
+  try{const r=await g2h(R.next);if(!r||!r.hy)throw 0;Object.assign(R,{hd:r.hd,hm:r.hm,hy:r.hy})}
+  catch(e){R.hfail=true}
+  R.hbusy=false;if(S.res===R)renderRes();
+}
+const ensureHeb=()=>{if(S.res&&S.showH)fetchHeb(S.res)};
+
+/* ---------- Calculate ---------- */
+async function calculate(){
+  const T=t();$("err").textContent="";const btn=$("calc");
+  try{
+    const today=midnight();let birth,next,age,H=null;
+    if(S.inT==="g"){
+      const v=$("gDate").value;if(!v){$("err").textContent=T.nodate;return}
+      const [y,m,d]=v.split("-").map(Number);birth=new Date(y,m-1,d);
+      next=new Date(today.getFullYear(),m-1,d);
+      if(next<today)next=new Date(today.getFullYear()+1,m-1,d);
+      age=next.getFullYear()-y;
+    }else{
+      btn.disabled=true;btn.textContent=T.busy;
+      const hd=+$("hd").value,hm=MK[+$("hm").value],hy=+$("hy").value;
+      const b=await h2g(hy,hm,hd);if(!b)throw 0;birth=toDate(b);
+      const now=await g2h(today);if(!now)throw 0;
+      let ch,cy;
+      for(let y=now.hy;y<=now.hy+2&&!next;y++){
+        const r=await h2g(y,hm,hd);if(!r)continue;
+        const dt=toDate(r);if(dt>=today){next=dt;age=y-hy;ch=r;cy=y}
+      }
+      if(!next)throw 0;
+      H={hd:ch.hd||hd,hm:ch.hm||hm,hy:ch.hy||cy};
+    }
+    const daysLeft=Math.round((utcDay(next)-utcDay(today))/864e5);
+    S.res=Object.assign({next,age,daysLeft,isToday:daysLeft===0,lived:Math.round((utcDay(today)-utcDay(birth))/864e5)},H||{});
+    S.saved=false;$("save").textContent=T.save;$("save").classList.remove("ok");
+    $("res").classList.remove("hide");renderRes();
+    $("res").scrollIntoView({behavior:"smooth",block:"start"});
+    if(S.showH&&!S.res.hy)fetchHeb(S.res);
+  }catch(e){$("err").textContent=T.err}
+  btn.disabled=false;btn.textContent=T.calc;
+}
+
+/* ---------- Calendar ---------- */
+function saveCal(kind){
+  const T=t(),R=S.res,d=R.next,e=addDay(d,1);
+  const title=T.ev,det=T.det;
+  if(kind==="google"){
+    window.open(`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${ymd(d)}/${ymd(e)}&details=${encodeURIComponent(det)}&recur=RRULE:FREQ=YEARLY`,"_blank");
+  }else if(kind==="outlook"){
+    window.open(`https://outlook.live.com/calendar/0/deeplink/compose?subject=${encodeURIComponent(title)}&startdt=${iso(d)}&enddt=${iso(e)}&body=${encodeURIComponent(det)}&allday=true`,"_blank");
+  }else{
+    const now=new Date().toISOString().replace(/[-:]/g,"").split(".")[0]+"Z";
+    const ics=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Birthday Countdown//EN","CALSCALE:GREGORIAN","METHOD:PUBLISH","BEGIN:VEVENT",
+      `UID:bday-${ymd(d)}-${Date.now()}@birthday-countdown`,`DTSTAMP:${now}`,`DTSTART;VALUE=DATE:${ymd(d)}`,`DTEND;VALUE=DATE:${ymd(e)}`,
+      "RRULE:FREQ=YEARLY",`SUMMARY:${title}`,`DESCRIPTION:${det}`,"TRANSP:TRANSPARENT",
+      "BEGIN:VALARM","ACTION:DISPLAY",`DESCRIPTION:${title}`,"TRIGGER:-P1D","END:VALARM","END:VEVENT","END:VCALENDAR"].join("\r\n");
+    const url=URL.createObjectURL(new Blob([ics],{type:"text/calendar;charset=utf-8"}));
+    const a=document.createElement("a");a.href=url;a.download="birthday.ics";document.body.appendChild(a);a.click();
+    setTimeout(()=>{a.remove();URL.revokeObjectURL(url)},1500);
+  }
+  S.saved=true;$("save").textContent=T.saved;$("save").classList.add("ok");closeSheet();
+}
+const openSheet=()=>$("ov").classList.add("open");
+const closeSheet=()=>$("ov").classList.remove("open");
+
+/* ---------- Init ---------- */
+$("langs").innerHTML=Object.keys(L).map(k=>`<button data-l="${k}">${L[k].flag} ${L[k].name}</button>`).join("");
+$("hd").innerHTML=Array.from({length:30},(_,i)=>`<option value="${i+1}">${toHebrewNumber(i+1,1)}</option>`).join("");
+$("hy").innerHTML=Array.from({length:46},(_,i)=>`<option value="${5760+i}">${toHebrewNumber(5760+i,1)}</option>`).join("");
+$("hy").value=5780;
+$("langs").onclick=e=>{const b=e.target.closest("button");if(b){S.lang=b.dataset.l;setText()}};
+$("segIn").onclick=e=>{const b=e.target.closest("button");if(b){S.inT=b.dataset.v;setText()}};
+$("swH").onchange=e=>{S.showH=e.target.checked;if(!S.showH&&!S.showG)S.showG=true;$("err").textContent="";setText();ensureHeb()};
+$("swG").onchange=e=>{S.showG=e.target.checked;if(!S.showG&&!S.showH)S.showG=true;setText()};
+$("calc").onclick=calculate;
+$("save").onclick=openSheet;
+$("m_x").onclick=closeSheet;
+$("ov").onclick=e=>{if(e.target===$("ov"))closeSheet()};
+document.querySelectorAll(".opt").forEach(b=>b.onclick=()=>saveCal(b.dataset.c));
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeSheet()});
+setText();
+setInterval(tick,1000);
+</script>
+</body>
+  </html>
